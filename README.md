@@ -119,8 +119,136 @@ This approach prioritizes consistency and avoids invalid states caused by interr
 ## Trade-off
 
 The primary trade-off is the use of a centralized CardManager.
+# DEVLOG
+
+## Initial Planning
+
+I began by identifying the requirements that affected core gameplay architecture:
+
+* Continuous card interaction
+* Variable board sizes
+* Save/Load support
+* Android lifecycle handling
+* Multiple level configurations
+
+The project was intentionally kept small with emphasis on correctness and maintainability.
+
+## Board Generation
+
+The first implementation focused on dynamic board creation.
+
+Board dimensions are selected through level toggles and generated at runtime.
+
+Supported sizes:
+
+* 2x2
+* 2x3
+* 3x3
+* 4x3
+* 4x4
+* 5x3
+* 5x4
+* 5x5
+
+## Card Animation
+
+Card flips were implemented manually using coroutines and quaternion interpolation.
+
+No third-party tweening or animation libraries were used.
+
+## Odd Board Sizes
+
+One challenge was supporting odd-sized grids.
+
+A traditional memory game requires an even number of cards.
+
+### Initial Approach
+
+The first approach removed one slot from odd-sized boards.
+
+Result:
+
+* Empty visual spaces
+* Asymmetrical layouts
+
+### Final Approach
+
+A dedicated blank card was introduced.
+
+Benefits:
+
+* Full board coverage
+* Consistent layouts
+* Simpler user experience
+
+## Save/Load System
+
+The save system underwent multiple iterations.
+
+### Early Attempt
+
+The first version attempted to save visual card state including currently flipped cards.
+
+Problems encountered:
+
+* State restoration complexity
+* Invalid interaction states
+* Increased coupling between animation and persistence
+
+### Final Approach
+
+The final version saves only stable gameplay state:
+
+* Card assignments
+* Matched cards
+* Score
+* Turn count
+
+Animation state is reconstructed after loading.
+
+This produced a more reliable solution.
+
+## Android Lifecycle
+
+Autosave was added using:
+
+* OnApplicationPause()
+* Android back button handling
+
+This ensures progress is preserved when the application loses focus.
+
+## Lessons Learned
+
+The largest lesson from the project was the importance of separating gameplay state from visual state.
+
+Attempting to serialize visual animation state introduced unnecessary complexity and reduced reliability.
+
+Persisting only gameplay state resulted in a simpler and more robust solution.
 
 For a larger project I would move matching logic, persistence, and scoring into dedicated systems to improve scalability and testability.
 
 Given the project scope, the manager-based approach allowed rapid implementation while keeping complexity low.
-# Alantrix-Geim-Studios-Task_CardMatch
+# AI_DISCLOSURE
+
+AI tools were used during development for research, implementation discussion, debugging assistance, and documentation support.
+
+Primary usage included:
+
+* Reviewing architecture options
+* Discussing save/load implementation approaches
+* Debugging state restoration issues
+* Refining odd-sized board handling
+* Drafting project documentation
+
+All gameplay code was reviewed, integrated, and modified manually before inclusion in the project.
+
+AI-generated suggestions were treated as implementation references rather than copied solutions.
+
+Estimated AI contribution:
+
+* Design discussion and troubleshooting assistance: Moderate
+* Final implementation decisions and integration: Manual
+* Documentation drafting assistance: Moderate
+
+The final project structure, gameplay behaviour, and technical decisions remain the developer's responsibility.
+
